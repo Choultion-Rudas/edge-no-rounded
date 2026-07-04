@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 
 %1 mshta vbscript:CreateObject("Shell.Application").ShellExecute("cmd.exe","/c ""%~s0"" ::","","runas",1)(window.close)&&exit
@@ -22,14 +22,15 @@ reg add "HKCU\Software\Classes\MSEdgeHTM\shell\open\command" /ve /t REG_SZ /d "\
 reg add "HKCU\Software\Classes\MSEdgeMHT\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
 reg add "HKCU\Software\Classes\Microsoft-Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% -- \"%%1\"" /f >nul 2>&1
 
-for %%P in (http https) do (
-    reg query "HKLM\SOFTWARE\Classes\%%P\shell\open\command" /ve 2>nul | findstr /i "msedge.exe" >nul && (
-        reg add "HKLM\SOFTWARE\Classes\%%P\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
-    )
-    reg query "HKCU\Software\Classes\%%P\shell\open\command" /ve 2>nul | findstr /i "msedge.exe" >nul && (
-        reg add "HKCU\Software\Classes\%%P\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
-    )
-)
+reg add "HKCU\Software\Classes\http\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
+reg add "HKCU\Software\Classes\https\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
+
+reg add "HKLM\SOFTWARE\Classes\Applications\msedge.exe\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
+reg add "HKCU\Software\Classes\Applications\msedge.exe\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args% --single-argument %%1" /f >nul 2>&1
+
+reg add "HKLM\SOFTWARE\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\WOW6432Node\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
+reg add "HKCU\Software\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
 
 set "temp_ps1=%temp%\edge_fix_temp.ps1"
 echo $Arguments = '--disable-features=msFeatureGroupNewLookAndFeelHoldout --enable-features=msForceNoRoundedCornerAndMargin' > "%temp_ps1%"
@@ -51,25 +52,6 @@ echo                 $Shortcut.Arguments = $Arguments >> "%temp_ps1%"
 echo                 $Shortcut.Save() >> "%temp_ps1%"
 echo             } >> "%temp_ps1%"
 echo         } catch {} >> "%temp_ps1%"
-echo     } >> "%temp_ps1%"
-echo } >> "%temp_ps1%"
-
-echo $RegPaths = @( >> "%temp_ps1%"
-echo     "HKLM:\SOFTWARE\Classes\Applications\msedge.exe\shell\open\command", >> "%temp_ps1%"
-echo     "HKCU:\Software\Classes\Applications\msedge.exe\shell\open\command", >> "%temp_ps1%"
-echo     "HKLM:\SOFTWARE\Clients\StartMenuInternet\Microsoft Edge\shell\open\command", >> "%temp_ps1%"
-echo     "HKLM:\SOFTWARE\WOW6432Node\Clients\StartMenuInternet\Microsoft Edge\shell\open\command", >> "%temp_ps1%"
-echo     "HKCU:\Software\Clients\StartMenuInternet\Microsoft Edge\shell\open\command", >> "%temp_ps1%"
-echo     "HKLM:\SOFTWARE\Classes\MSEdgeMHT\shell\open\command", >> "%temp_ps1%"
-echo     "HKCU:\Software\Classes\MSEdgeMHT\shell\open\command" >> "%temp_ps1%"
-echo ) >> "%temp_ps1%"
-echo foreach ($R in $RegPaths) { >> "%temp_ps1%"
-echo     if (Test-Path $R) { >> "%temp_ps1%"
-echo         $currentVal = (Get-Item -Path $R -ErrorAction SilentlyContinue).GetValue("") >> "%temp_ps1%"
-echo         if ($currentVal -and $currentVal -like "*msedge.exe*" -and $currentVal -notlike "*--disable-features=msFeatureGroupNewLookAndFeelHoldout*") { >> "%temp_ps1%"
-echo             $newVal = $currentVal -replace '(msedge\.exe\"?)( ^| $)', '$1 --disable-features=msFeatureGroupNewLookAndFeelHoldout --enable-features=msForceNoRoundedCornerAndMargin$2' >> "%temp_ps1%"
-echo             Set-Item -Path $R -Value $newVal >> "%temp_ps1%"
-echo         } >> "%temp_ps1%"
 echo     } >> "%temp_ps1%"
 echo } >> "%temp_ps1%"
 
