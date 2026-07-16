@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 
 %1 mshta vbscript:CreateObject("Shell.Application").ShellExecute("cmd.exe","/c ""%~s0"" ::","","runas",1)(window.close)&&exit
@@ -31,6 +31,19 @@ reg add "HKCU\Software\Classes\Applications\msedge.exe\shell\open\command" /ve /
 reg add "HKLM\SOFTWARE\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\WOW6432Node\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
 reg add "HKCU\Software\Clients\StartMenuInternet\Microsoft Edge\shell\open\command" /ve /t REG_SZ /d "\"%EdgeExe%\" %Args%" /f >nul 2>&1
+
+reg delete "HKLM\SOFTWARE\Classes\MSEdgePDF\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Classes\MSEdgeHTM\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Classes\MSEdgeMHT\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Classes\Microsoft-Edge\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\MSEdgePDF\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\MSEdgeHTM\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\MSEdgeMHT\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\Microsoft-Edge\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\http\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\https\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Classes\Applications\msedge.exe\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
+reg delete "HKCU\Software\Classes\Applications\msedge.exe\shell\open\command" /v "DelegateExecute" /f >nul 2>&1
 
 set "temp_ps1=%temp%\edge_fix_temp.ps1"
 echo $Arguments = '--disable-features=msFeatureGroupNewLookAndFeelHoldout --enable-features=msForceNoRoundedCornerAndMargin' > "%temp_ps1%"
